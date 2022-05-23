@@ -96,9 +96,12 @@ func EvalLet(list *types.List, e *env.Env) (types.Object, error) {
 	bindings := list.Values()[1].(types.Sequence)
 	body := list.Values()[2]
 
-	for i := 0; i < bindings.Length()-1; i += 2 {
-		symbol := bindings.Get(i).(types.Symbol)
-		evaluated, err := Eval(bindings.Get(i+1), newEnv)
+	bindingChunks := fn.Chunk(bindings, 2)
+	for _, binding := range bindingChunks {
+		symbol := binding[0].(types.Symbol)
+		value := binding[1]
+
+		evaluated, err := Eval(value, newEnv)
 		if err != nil {
 			return nil, err
 		}
