@@ -14,7 +14,7 @@ import (
 
 type OpFn func([]types.Object) types.Object
 
-type ReplEnv map[string]OpFn
+type ReplEnv map[string]fn.ReduceFn
 
 var replEnv = ReplEnv{
 	"+": fn.Sum,
