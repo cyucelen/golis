@@ -27,6 +27,12 @@ func PrintString(object types.Object) string {
 	case *types.HashMap:
 		ss := fn.MapObjectToString(o.KVList(), PrintString)
 		return "{" + strings.Join(ss, " ") + "}"
+	case types.Nil:
+		return "nil"
+	case types.True:
+		return "true"
+	case types.False:
+		return "false"
 	default:
 		return "Undefined Type"
 	}

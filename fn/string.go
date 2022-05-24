@@ -1,6 +1,9 @@
 package fn
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 func TrimEach(cutset string) func([]string) []string {
 	return func(ss []string) []string {
@@ -24,4 +27,14 @@ func IsEndsWith(s string, c byte) bool {
 
 func IsSingleChar(s string) bool {
 	return len(s) == 1
+}
+
+func IsNumber(s string) bool {
+	_, err := strconv.Atoi(s)
+	return err == nil
+}
+
+func MustConvertToNumber(s string) int {
+	n, _ := strconv.Atoi(s)
+	return n
 }

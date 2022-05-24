@@ -3,7 +3,6 @@ package reader
 import (
 	"errors"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/cyucelen/golis/fn"
@@ -86,12 +85,20 @@ func (r *Reader) ReadAtom() (types.Object, error) {
 		return types.NewKeyword(token[1:]), nil
 	}
 
-	number, err := strconv.Atoi(token)
-	if err != nil {
-		return types.NewSymbol(token), nil
+	if fn.IsNumber(token) {
+		return types.NewNumber(fn.MustConvertToNumber(token)), nil
 	}
 
-	return types.NewNumber(number), nil
+	switch token {
+	case "nil":
+		return types.Nil{}, nil
+	case "true":
+		return types.True{}, nil
+	case "false":
+		return types.False{}, nil
+	}
+
+	return types.NewSymbol(token), nil
 }
 
 func tokenize(s string) []string {
