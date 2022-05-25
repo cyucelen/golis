@@ -12,8 +12,6 @@ import (
 	"github.com/cyucelen/golis/types"
 )
 
-type OpFn func([]types.Object) types.Object
-
 type ReplEnv map[string]types.Function
 
 var replEnv = ReplEnv{
@@ -44,9 +42,9 @@ func Eval(ast types.Object, env ReplEnv) (types.Object, error) {
 			return nil, errors.New("unexpected")
 		}
 
-		fn := list.Values()[0].(OpFn)
+		fn := list.Values()[0].(types.Function)
 		args := list.Values()[1:]
-		return fn(args), nil
+		return fn(args)
 	default:
 		return EvalAST(ast, env)
 	}

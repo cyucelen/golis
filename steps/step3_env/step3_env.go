@@ -43,7 +43,7 @@ func Eval(ast types.Object, env *env.Env) (types.Object, error) {
 
 	evaluatedList := types.MustMakeList(evaluatedAst)
 
-	fn := evaluatedList.Values()[0].(fn.ReduceFn)
+	fn := evaluatedList.Values()[0].(types.Function)
 	args := evaluatedList.Values()[1:]
 
 	return fn(args)
