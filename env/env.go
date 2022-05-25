@@ -11,10 +11,16 @@ type Env struct {
 	data  map[types.Symbol]types.Object
 }
 
-func NewEnv(outer *Env) *Env {
+func NewEnv(outer *Env, binds []types.Symbol, exprs []types.Object) *Env {
+	data := make(map[types.Symbol]types.Object)
+
+	for i := range binds {
+		data[binds[i]] = exprs[i]
+	}
+
 	return &Env{
 		outer: outer,
-		data:  make(map[types.Symbol]types.Object),
+		data:  data,
 	}
 }
 

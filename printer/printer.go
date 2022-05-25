@@ -33,6 +33,8 @@ func PrintString(object types.Object) string {
 		return "true"
 	case types.False:
 		return "false"
+	case types.Function:
+		return "#<function>"
 	default:
 		return "Undefined Type"
 	}

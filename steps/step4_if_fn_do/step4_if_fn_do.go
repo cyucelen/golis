@@ -28,12 +28,16 @@ func Eval(ast types.Object, env *env.Env) (types.Object, error) {
 		return ast, nil
 	}
 
-	op := list.Values()[0].(types.Symbol)
-	switch op {
-	case types.DefineSymbol:
-		return EvalDefine(list, env)
-	case types.LetSymbol:
-		return EvalLet(list, env)
+	symbol, isSymbol := list.Values()[0].(types.Symbol)
+	if isSymbol {
+		switch symbol {
+		case types.DefineSymbol:
+			return EvalDefine(list, env)
+		case types.LetSymbol:
+			return EvalLet(list, env)
+		case types.FunctionSymbol:
+			return EvalFunction(list, env)
+		}
 	}
 
 	evaluatedAst, err := EvalAST(list, env)
@@ -43,7 +47,7 @@ func Eval(ast types.Object, env *env.Env) (types.Object, error) {
 
 	evaluatedList := types.MustMakeList(evaluatedAst)
 
-	fn := evaluatedList.Values()[0].(fn.ReduceFn)
+	fn := evaluatedList.Values()[0].(types.Function)
 	args := evaluatedList.Values()[1:]
 
 	return fn(args)
@@ -110,6 +114,24 @@ func EvalLet(list *types.List, e *env.Env) (types.Object, error) {
 	}
 
 	return Eval(body, newEnv)
+}
+
+func EvalFunction(list *types.List, e *env.Env) (types.Function, error) {
+	if list.Length() != 3 {
+		return nil, errors.New("fn* must have 2 args")
+	}
+
+	bindsList, isList := types.MakeList(list.Get(1))
+	if !isList {
+		return nil, errors.New("fn* first argument must be list")
+	}
+
+	bindSymbols := types.MakeSymbols(bindsList.Values())
+
+	return func(exprs []types.Object) (types.Object, error) {
+		newEnv := env.NewEnv(e, bindSymbols, exprs)
+		return Eval(list.Get(2), newEnv)
+	}, nil
 }
 
 func evalWitEnv(env *env.Env) func(ast types.Object) (types.Object, error) {
